@@ -64,43 +64,30 @@
 //     * makes Image Previews available in Chrome, Opera (also useful for image buyers)
 
 
+ 
+
+   
 
 
-
-// HOOKs
-// where to hook the features
-    
-
-var ss_hooks = { 
-    'main menu submit' : 'body',     // byId
-    'main menu submit 2' : 'header',             // class
-    
-    'edit pic www' : 'ul.pic-info'               // right by the image title
-    
-
-};
-
-    
-var tmp;
-
+      
+      
 
 
 var SSSiteBoost = {
 
     
   run_SSS: function() {
-    
-    var doc = document;
-        
-    var myRGXP_part = new RegExp('http:\/\/.*?shutterstock\.com\/', 'gi');
-    var _match;
-    _match = myRGXP_part.exec(doc.location.href);
-    
 
-        
-    /* exchange below */
-       
-
+     var doc = document;  
+     console.log('>>> run_SSS');
+     var myRGXP_part = new RegExp('http:\/\/.*?shutterstock\.com\/', 'gi');
+     var _match;
+     _match = myRGXP_part.exec(doc.location.href);
+      
+      
+    /* Exchange below - between GM / EXT etc... */
+    
+      
         if (!_match) 
             return false;
         
@@ -144,7 +131,7 @@ var SSSiteBoost = {
             
             (function($){
 
-
+             
             
                 $.ajaxSetup({
                     cache: false
@@ -179,13 +166,67 @@ var SSSiteBoost = {
                 
               
                 function _run(){
-                
+                    
+                    // HOOKs
+                    // where to hook the features
+
+
+                    var ss_hooks = { 
+                          'main menu submit' : 'header',           // by class + insert parent
+                          'main menu submit 2' : 'header',         // class
+
+                          'edit pic www' : 'ul.pic-info'           // right by the image title
+                    };
+
+
+                    var tmp;    
                     var _docLocation = window.location.href;
+                    var str_href = _docLocation;
+                    var _on_page_area;
+                    var _on_page;
+                    var _inplace_edit_id;
+
+
+                  // DETERMINE WHERE WE ARE - the page
+                    
+                  if (str_href.search("ubmit.shutterstock.com") > 0) {
+                      _on_page_area = 'SUBMITTER';
+                  }
+
+                  // This area disappeared from the SS site
+
+                  //if (str_href.search("top50.mhtml") > 0) {
+                  //    _on_page = 'TOP50';
+                  //}
+
+
+                  if (str_href.search("approved=-1") > 0) {
+                      _on_page = 'REJECTED';
+                     }
+                  if (str_href.search("approved=1") > 0) {
+                      _on_page = 'APPROVED';
+                     }
+                  if ((str_href.search("home.mhtml") > 0) || (str_href.search("main.mhtml") > 0)) {
+                      _on_page = 'HOME';
+
+                     }
+                  if (_tmp_match = _preg_match(_docLocation, 'submit\\.shutterstock\\.com\\/edit_media\\.mhtml\\?id=(\\d+)\\&type=photos')) {
+                      _on_page = 'EDIT_PHOTO';
+                      _inplace_edit_id = _tmp_match[1];
+                     }
+
+
+                  _match = _preg_match( _docLocation, 'www.shutterstock.com.*((#photo_id=)|(pic\\.mhtml\\?id=)|(\\/pic-))(\\d+)');
+
+                    if ((_match) && (_match[5] != null)) {
+                        //window.plr_stop_go = 1;
+                        _on_page = 'SINGLE_PHOTO';
+                    }
+
+                   
                     
                     var timeStampCache = new Date();
-
                     var _autorun = true;
-
                     var _appName = 'SS SiteBoost';
                     var _update = 'b';
                     var _version_number = '0.30';
@@ -195,11 +236,10 @@ var SSSiteBoost = {
                     var _version = '<b>' + _version_number + '</b>';
                     var _refresh_pixel = '<img id="F5_refresh_pixel" src="http://fotostocki.pl/plrangjs/_wrk/cnt.html?cache=' + timeStampCache.getTime() + '" width="1px">';
                     
-                    
                     if (getCookie('SSusername'))
-                    var _SSusername =  getCookie('SSusername');
+                       var _SSusername =  getCookie('SSusername');
                     else 
-                    var _SSusername = getCookie('username');
+                       var _SSusername = getCookie('username');
                     
 
                     
@@ -339,8 +379,8 @@ var SSSiteBoost = {
                     var _scriptID = Math.floor(Math.random() * 128);
                     var _scriptIDcheckInterval = false;
                     
-                    var _on_page = false;
-                    var _on_page_area = false;
+                    //var _on_page = false;
+                    //var _on_page_area = false;
                     
                     var _menu_over_timeout = false;
                     
@@ -369,7 +409,7 @@ var SSSiteBoost = {
                     var _stat_IADBauto_refresh_DayWait = 0.05;
                     var SS_DB_dailyDone = 12 * 60;
                     var _switch_prev_panel = false;
-                    var _inplace_edit_id = false;
+                    //var _inplace_edit_id = false;
                     var localStor_OK = false;
                     
                     
@@ -401,13 +441,13 @@ var SSSiteBoost = {
                     }
                     
                     
-                    
-                    /*
-                 _imgADBcurrPage = 1;
-                 _imgADBnumPages = 0;
-                 _imgADBcurrChapter = 1;
-                 _IADBmode = 'auto';
-                 */
+                                
+                                /*
+                             _imgADBcurrPage = 1;
+                             _imgADBnumPages = 0;
+                             _imgADBcurrChapter = 1;
+                             _IADBmode = 'auto';
+                             */
                     function plr_submit_prev_ON(){
                     /*
                      var _match = /\(\'(.*)\'\)/i.exec($("#results-mode-form").attr('action'));
@@ -430,11 +470,11 @@ var SSSiteBoost = {
                     
                     
                     if (_docLocation.search('www.') < 0) 
-                        var _ver_update = _SS_launch_bar  
+                        var widget_main = _SS_launch_bar  
                         + '<input type="button" id="F5stat_start" class="F5btn_standard" value="Stats" /> '  
                         + ' <a href="http://fotostocki.pl/artykuly/shutterstock-site-patch-update/" title="Info and Manual" target="_blank" style="font-size:9pt;font-weight:normal\" >SS SiteBoost</a> ' + '<a href=\"http://fotostocki.pl/artykuly/shutterstock-site-patch-update/#update-' + _version_number + '" title="UPDATE INFO" target="_blank" style="font-size:9pt">' + _version + _update + '</a> :: ' + _refresh_pixel;
                     else {
-                        _ver_update = _SS_launch_bar +
+                        widget_main = _SS_launch_bar +
                         ' <a href="http://fotostocki.pl/artykuly/shutterstock-site-patch-update/" title="Info and Manual" target="_blank" style="font-size:9pt;font-weight:normal\" >SS SiteBoost</a> ' +
                         '<a href=\"http://fotostocki.pl/artykuly/shutterstock-site-patch-update/#update-' +
                         _version_number +
@@ -451,7 +491,9 @@ var SSSiteBoost = {
                     
                     
                     
-                    var str_href = _docLocation;
+                    // FOOTAGE ?
+                    
+                    //var str_href = _docLocation;
                     var plr_continue = false;
                     
                     var _match = /footage\.shutt.*\/clip-(\d+)-.*\.html/i.exec(_docLocation);
@@ -468,7 +510,7 @@ var SSSiteBoost = {
                         plr_go_footage = function(){
                         
                             $('div.content-container').prepend('<div id="plr_status" style="'+ _F5_eff_corner +'color:black;background:#fBF4f8;float:right;font-size:9pt;padding:8px;clear:both;margin-bottom:20px;margin-top:8px">' +
-                            _ver_update +
+                            widget_main +
                             ' <span style="font-weight:normal;color:red"> Edit enabled</span> :: footage</div>');
                             
                             
@@ -516,6 +558,7 @@ var SSSiteBoost = {
                         plr_go_footage();
                         
                     }
+                    
                     if ((str_href.search("results.mhtml") > 0)) {
                         if (!confirm('Need to disable original Image Previews FIRST\n\nOK - disable and CLICK AGAIN THE BOOKMARK (if bookmarklet used) \nCANCEL to abort')) {
                         }
@@ -528,18 +571,21 @@ var SSSiteBoost = {
                     }
 
                     
-                    _match = _preg_match(_docLocation, 'shutterstock.com.*((#photo_id=)|(pic\\.mhtml\\?id=)|(\\/pic-))(\\d+)');
                     
-                    if ((_match) && (_match[5] != null)) {
+                    // SINGLE PHOTO at WWW. 
+                    
+                    _match = _preg_match( _docLocation, 'www.shutterstock.com.*((#photo_id=)|(pic\\.mhtml\\?id=)|(\\/pic-))(\\d+)');
+                    
+                    if ( _on_page == 'SINGLE_PHOTO' ) {
                         window.plr_stop_go = 1;
-                        _on_page = 'SINGLE_PHOTO';
-                        
-                        
+                        //_on_page = 'SINGLE_PHOTO';
+                       
                         if (!_autorun)
                             window.location.href = 'http://submit.shutterstock.com/edit_media.mhtml?id=' + _match[5] + '&type=photos';
                         else {
                             plr_edit = "javascript: window.location.href='http://submit.shutterstock.com/edit_media.mhtml?id=" + _match[5] + "&type=photos';return false";
-                            $( ss_hooks_www['edit pic'] ).prepend('<div style="font-size:10pt;font-weight:bold;margin-bottom:16px;border:1px dashed green;padding:4px"><a href="" onclick="' + plr_edit + '"><img  src=\"http://submit.shutterstock.com/images/edit.png\"  class=\"clssplr_edit\" title=\"Edit ' + _match[5] + '\"> Edit</a></div>');
+                            
+                            $( ss_hooks['edit pic www'] ).prepend('<div style="font-size:10pt;font-weight:bold;margin-bottom:16px;border:1px dashed green;padding:4px"><a href="" onclick="' + plr_edit + '"><img  src=\"http://submit.shutterstock.com/images/edit.png\"  class=\"clssplr_edit\" title=\"Edit ' + _match[5] + '\"> Edit</a></div>');
                             $('.clssplr_edit').css({
                                 'border': '0px',
                                 'cursor': 'pointer',
@@ -549,6 +595,9 @@ var SSSiteBoost = {
                             
                         }
                     }
+                    
+                    
+                    
                     
                     
                     _getSSInitialData();
@@ -599,14 +648,18 @@ var SSSiteBoost = {
                                 _thumb_factor = 1;
                             
                             
+                            /*
+                            
                             if (str_href.search("ubmit.shutterstock.com") > 0) {
                                 _on_page_area = 'SUBMITTER';
                             }
                             
-                            if (str_href.search("top50.mhtml") > 0) {
-                                _on_page = 'TOP50';
-                            }
-
+                            // This area disappeared from the SS site
+                            
+                            //if (str_href.search("top50.mhtml") > 0) {
+                            //    _on_page = 'TOP50';
+                            //}
+                            
 
                             if (str_href.search("approved=-1") > 0) {
                                 _on_page = 'REJECTED';
@@ -618,13 +671,15 @@ var SSSiteBoost = {
                                 _on_page = 'HOME';
                                 
                             }
-                            if (_tmp_match = _preg_match(_docLocation, 'submit\\.shutterstock\\.com\\/edit\\.mhtml\\?id=(\\d+)\\&type=photos')) {
+                            if (_tmp_match = _preg_match(_docLocation, 'submit\\.shutterstock\\.com\\/edit_media\\.mhtml\\?id=(\\d+)\\&type=photos')) {
                                 _on_page = 'EDIT_PHOTO';
                                 _inplace_edit_id = _tmp_match[1];
-                            
-                            
                                 
                             }
+                            */
+                            
+                            
+                            
 
                             plr_go = function(){
                             
@@ -636,52 +691,56 @@ var SSSiteBoost = {
                                 _IADBauto();
                                 
                                 
-                                var _script_name = 
+                                var window_main = 
                                 ' <div id="SS_launch_bar" style="width:91%;margin:auto;clear:both;text-align:center;font-family:sans-serif;font-size:9pt;font-weight:normal">'
                                 
                                 + ' <div id="plr_status" style="'+ _F5_eff_corner +'color:orange;background-color:#aaa;padding:4px 0px;width:100%;text-align:center;border:1px solid #ccc;font-weight:normal" >' 
-                                + _ver_update +
+                                + widget_main +
                                 ' <span style="font-size:9pt;font-weight:normal;color:white"> Edit enabled</span>';
                                 
                                 
                                 if ((str_href.search("main.mhtml") > 0) || (str_href.search("home.mhtml") > 0)) {
-                                    _script_name += '<div id="SSdbg"></div></div><p style="clear:both;font-size:1px">&nbsp;</p></div>';
+                                    window_main += '<div id="SSdbg"></div></div><p style="clear:both;font-size:1px">&nbsp;</p></div>';
                                 }
                                 else {
                                 
-                                    _script_name += '<div id="SSdbg"></div></div><p style="clear:both;font-size:1px">&nbsp;</p></div>';
+                                    window_main += '<div id="SSdbg"></div></div><p style="clear:both;font-size:1px">&nbsp;</p></div>';
                                 }
 
                                 
                                 
                                 
                                 
+                                // Universal hook for main panel widget 2016 07
                                 
-                                
-                                tmp_get = document.getElementsByClassName( 'header' )[0];   // first in the node
+                                tmp_get = document.getElementsByClassName( ss_hooks['main menu submit']  )[0];   // first in the node
                                 
                                 tmp = document.createElement('div');
-                                tmp.innerHTML = _script_name;
+                                tmp.innerHTML = window_main;
                                 
                                 tmp_get.parentNode.insertBefore( tmp, document.getElementById("div"));
                                 
+                                        //.insertAdjacentHTML('afterbegin' , window_main);
                                 
                                 
-                                //document.getElementsByClassName( 'header_container' )[0].appendChild(tmp);
+                                // Disabled 06 2016 
+                                // Seems like some adjustments based on different page hooks
+                                // this time we try to make it more universal
+                                // plus at the moment finding the hooks Shutterstock changed
                                 
-                                //.insertAdjacentHTML('afterbegin' , _script_name);
                                 
                                 
+                                /*
                                 if ( tmp != null ) {
                                     // Instead of JQ and class / id names
                                     // use first DIV
-                                    // $(ss_hooks['main menu submit']).prepend(_script_name);
+                                    // $(ss_hooks['main menu submit']).prepend(window_main);
                                     
-                                    //document.getElementsByClassName( ss_hooks['main menu submit'] )[0].append(_script_name);
+                                    //document.getElementsByClassName( ss_hooks['main menu submit'] )[0].append(window_main);
                                 }
                                 else 
                                     if ($('#global_header').length ) {
-                                        $('#global_header').append(_script_name);
+                                        $('#global_header').append(window_main);
                                         $('#SS_launch_bar').hide().slideDown(300);
                                         $('#message_center').css({
                                             'margin': '0'
@@ -702,7 +761,7 @@ var SSSiteBoost = {
                                                 $('table:first').next().css({
                                                     'margin-top': '0px'
                                                 });
-                                                $('table:first').after(_script_name);
+                                                $('table:first').after(window_main);
                                                 
                                                 $('#quickbar').css({
                                                     'margin': '0px'
@@ -714,6 +773,8 @@ var SSSiteBoost = {
                                                 
                                             }
                                         }   
+                                
+                                */
                                 
 
                                 $('#SS_launch_bar * a').css({'color':'black', 'font-size':'9pt', 'font-family':'sans-serif','text-decoration':'none', 'font-weight':'normal'})
@@ -835,7 +896,7 @@ var SSSiteBoost = {
                                 
                                 
                                 
-                                  // 2016 - feature disabled - forum shortcuts menu
+                                // 2016 - FORUM feature disabled - forum shortcuts menu
                                 /*
                                  $('#F5_launch_forum').mouseenter(
                                    function(e){
@@ -1202,7 +1263,7 @@ var SSSiteBoost = {
                                         myRGXP = new RegExp('<tr><td class="date">(.*?)</tr>', 'gi');
                                         _make_html = _make_html_overall + _html_stat_table_head;
                                         
-                                        while (_match = myRGXP.exec(_new)) {
+                                        while ( _match = myRGXP.exec(_new) ) {
                                             _tmp_row = _match[1].replace('"stats_date.mhtml?date', '"http://submit.shutterstock.com/stats_date.mhtml?date');
                                             _make_html += '<tr class="stat_row" title="Switch the DAY"><td class="date" title="Click to enter">' + _tmp_row + '</tr>';
                                         }
@@ -1245,7 +1306,7 @@ var SSSiteBoost = {
                                         //var _tmp_regxp = '.*?total\\-value">\\$(\\d+\\.\\d+)<\/td>';
                                         
                                         
-                                        
+                                        /*
                                         _tmp_regxp = 'ALL\\-TIME<br>TOTALS\\:' + '.*?total\\-value">(\\d+)<\/td>' 
                                             + _tmp_regxp
                                             + _tmp_regxp 
@@ -1255,13 +1316,20 @@ var SSSiteBoost = {
                                             + _tmp_regxp + _tmp_regxp 
                                             //+  '.*?<\/tr>.*?' 
                                             + 'Gross Earnings\\:.*?\\$(\\d+\\.\\d+)<\/td>';
+                                        */
+                                        
+                                        // "str".repeat(3) ;
+                                        _tmp_regxp = 'ALL\\-TIME<br>TOTALS\\:' + '.*?total\\-value">(\\d+)<\/td>' 
+                                            + Array(10+1).join(_tmp_regxp)
+                                            + 'Gross Earnings\\:.*?\\$(\\d+\\.\\d+)<\/td>';
+                                        
                                         
                                         
                                         
                                         myRGXP = new RegExp( _tmp_regxp, 'gi');
                                         _match = myRGXP.exec( _new ) ;
                                         
-                                        alert(_match);
+                                        //alert(_match);
                                         
                                         var _tVals = {};
                                         
@@ -1282,43 +1350,28 @@ var SSSiteBoost = {
                                             _tVals.gross = _match[12];
                                             
                                             $('#F5_stat_panel * #F5_put_GROSS').html('Gross earnings: <b>' + _tVals.gross + '</b>');
+                                            
                                             putCookie('SSearningsValues', JSON.stringify(_tVals), 60 * 24);
                                         }
+                                        
                                         
                                         _new = _new_content;
                                         var _tmp_regxp = '.*?total\\-value">\\$(\\d+\\.\\d+)<\/td>[^$]*?';
                                         
                                         _tmp_regxp = 'MONTH<br>TOTALS\\:' +
                                         '.*?total\\-value">(\\d+)<\/td>.*?'
- +
-                                        _tmp_regxp
- +
-                                        _tmp_regxp
- +
-                                        _tmp_regxp
- +
-                                        _tmp_regxp
- +
-                                        _tmp_regxp
- +
-                                        _tmp_regxp
- +
-                                        _tmp_regxp
- +
-                                        _tmp_regxp
- +
-                                        _tmp_regxp
- +
-                                        _tmp_regxp
- +
-                                        '<\/tr>.*?';
+                                            
+                                            /*
+                                            + _tmp_regxp + _tmp_regxp + _tmp_regxp + _tmp_regxp + _tmp_regxp + _tmp_regxp + _tmp_regxp 
+                                            + _tmp_regxp + _tmp_regxp + _tmp_regxp
+                                            */ 
+                                        + Array(10+1).join(_tmp_regxp) + '<\/tr>.*?';
                                         
                                         myRGXP = new RegExp(_tmp_regxp, 'gi');
                                         _match = myRGXP.exec(_new);
                                         
                                         if (_match != null) {
-                                        
-                                        
+                                            
                                             _tVals.DLs = _match[1];
                                             _tVals.A25s = _match[2];
                                             _tVals.ODs = _match[3];
@@ -1779,7 +1832,7 @@ var SSSiteBoost = {
                                     _big_img_src = $(_obj).attr('src');
                                     
                                     if (_big_img_src.indexOf('display_pic_with_logo') > 0)
-                                    return false;
+                                       return false;
                                     
                                     _thumb_width = $(_obj).attr('width');
                                     _thumb_height = $(_obj).attr('height');
@@ -1793,7 +1846,8 @@ var SSSiteBoost = {
                                         _tmp_id = $(_obj).attr('src');
                                         _tmp_id = _preg_match(_tmp_id, "-(\\d+)\\.jpg");
                                     }
-                                    if ( ( (_tmp_id) &&  ( _on_page_area == 'SUBMITTER') &&(_on_page != 'TOP50') ))
+                                    
+                                    if ( ( ( _tmp_id ) &&  ( _on_page_area == 'SUBMITTER') && ( _on_page != 'TOP50') ))
                                     {
                                     
                                         var _tmp_put_arch = _buildIADB_infoTable(_tmp_id[1], 'single');
@@ -2004,9 +2058,10 @@ var SSSiteBoost = {
                                 });
                                 
                                 
-                                
-                                if (_on_page == 'EDIT_PHOTO') {
+                                console.log('>>> @ ' + _on_page);
+                                if ( _on_page == 'EDIT_PHOTO' ) {
                                     _editFormImprove(_inplace_edit_id);
+                                    
                                     _tmp_put_arch = _buildIADB_infoTable(_inplace_edit_id, 'single');
                                     $('form').before('<div id="page-EDIT_PHOTO" >' + _tmp_put_arch + '</div>');
                                     
@@ -2426,7 +2481,9 @@ var SSSiteBoost = {
                         
                         var _tmp_filename = 'http://submit.shutterstock.com/stats_media.mhtml?display_column=' + _name + '&pg=' + _nr;
 
-                        if(! $.get( _tmp_filename, _get25AD)) {}
+                        if(! $.get( _tmp_filename, _get25AD) ) {
+                            
+                        }
 
                     }
                     
@@ -3037,17 +3094,20 @@ var SSSiteBoost = {
             }
             
             
-            function _preg_match(_str, _patt){
+            
+             
+            
+        } /* _main() exchange end */
+
+      
+     function _preg_match(_str, _patt){
             
                 var myRGXP_part = new RegExp(_patt, 'gi');
                 return myRGXP_part.exec(_str);
             }
             
             
-            
-        } /* _main() exchange end */
-
-
+    console.log('>>> SSSiteBoost finished');
   } //run_SSS: function()
     
 } // SSSiteBoost
