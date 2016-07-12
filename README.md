@@ -3,6 +3,9 @@ This is a try to fix up the original SS Siteboost for Shutterstock application s
 Use it with the Greasemonkey add-on for Firefox.
 FF, Chrome and other extensions, as they were available with 0.29b are not ready yet. 
 
+Some features don't work. Main Live Stats panel should work, also Referrals and Total Stats. 
+Because it's an early phase of the revival process, you should be aware that some figures in stats may not be correct, 
+ALTHOUGH I haven't noticed such behavior.
 
 **** DISCLAIMER ****
 EARLY TEST VERSION!
