@@ -16,3 +16,10 @@ Version 0.30 and above will soon have their own info page.
 
 http://fotostocki.pl/software/shutterstock-site-patch-update/
 http://phototric.com/tag/ss-siteboost
+
+How To Use
+
+Install Greasemonkey add-on for Firefox.
+Click the ss_siteboost_gm.user.js to go to the source.
+Click the RAW button to install script in Firefox with Greasemonkey.
+
