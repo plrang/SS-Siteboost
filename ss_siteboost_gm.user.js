@@ -8,18 +8,12 @@
 // @include        http://*.shutterstock.com/*
 // ==/UserScript==
 
-
-// 2016 06 - This is a try to fix up the original SS Siteboost application script
-// **** DISCLAIMER ****
-// Early test version! 
-// Provided “as is” without warranty of any kind. 
-// Use at your own risk.
-// ********************
-
 // ABOUT and INFO PAGE
-// 
+// Also available as a bookmarklet for any browser
 // http://fotostocki.pl/software/shutterstock-site-patch-update/
 
+
+// Recent changes 2016 07
 // Started about 04-09-2010
 
 // Changes
@@ -153,6 +147,9 @@ var SSSiteBoost = {
                 } else
                     _run();
 
+                
+                
+                
                 function _run() {
 
                     // HOOKs
@@ -171,34 +168,46 @@ var SSSiteBoost = {
                     var _on_page_area;
                     var _on_page;
                     var _inplace_edit_id;
+                    var widget_main;
+                    var _on_page_ID;
 
+
+                    
                     // DETERMINE WHERE WE ARE - the page
-
-                    if (str_href.search("ubmit.shutterstock.com") > 0) {
+            
+                    // 7 means 'starts right after' http://
+                    if (str_href.search("forums.submit.shutterstock.com") == 7) {
+                        _on_page = 'FORUM';
+                       }
+                    
+                    if (str_href.search("submit.shutterstock.com") == 7) {
                         _on_page_area = 'SUBMITTER';
-                    }
+                       }
 
-                    // This area disappeared from the SS site
+                        // This area disappeared from the SS site
 
-                    //if (str_href.search("top50.mhtml") > 0) {
-                    //    _on_page = 'TOP50';
-                    //}
+                        //if (str_href.search("top50.mhtml") > 0) {
+                        //    _on_page = 'TOP50';
+                        //}
 
                     if (str_href.search("approved=-1") > 0) {
                         _on_page = 'REJECTED';
-                    }
+                       }
+                    
                     if (str_href.search("approved=1") > 0) {
                         _on_page = 'APPROVED';
-                    }
+                       }
+                    
                     if ((str_href.search("home.mhtml") > 0) || (str_href.search("main.mhtml") > 0)) {
                         _on_page = 'HOME';
 
-                    }
+                       }
+                    
                     if ( _tmp_match = _preg_match( _docLocation , 
                     'submit\\.shutterstock\\.com\\/edit_media\\.mhtml\\?id=(\\d+)\\&type=photos')) {
                         _on_page = 'EDIT_PHOTO';
                         _inplace_edit_id = _tmp_match[1];
-                    }
+                       }
 
                     _match = _preg_match(_docLocation ,
                         'www.shutterstock.com.*((#photo_id=)|(pic\\.mhtml\\?id=)|(\\/pic-))(\\d+)');
@@ -206,7 +215,37 @@ var SSSiteBoost = {
                     if ((_match) && (_match[5] !== null)) {
                         //window.plr_stop_go = 1;
                         _on_page = 'SINGLE_PHOTO';
-                    }
+                       }
+                    
+                    
+                    
+                    // Video gallery view
+                    // http://www.shutterstock.com/video/gallery/PLRANG-ART-328114/
+                    // Video single view
+                    // http://www.shutterstock.com/video/clip-14543701-stock-footage-holo-sphere-of-red-dots-over-blurry-red-clouds.html
+                    // 2016 07
+                    
+                    if (str_href.search("www.shutterstock.com/.*?video/gallery/") > 0) {
+                       _match = _preg_match(_docLocation , '\/video\/gallery\/.*?(\\d+)');    
+                        
+                        _on_page = 'VIDEO_GALLERY';
+                        _on_page_ID = _match[1];
+                        console.log(' >>>> ' +_on_page + ' ' + _on_page_ID);
+                       }    
+
+                    if (str_href.search("www.shutterstock.com/.*?video/clip-") > 0) {
+                       _match = _preg_match(_docLocation , '\/video\/clip-(\\d+)');    
+                        
+                        _on_page = 'SINGLE_VIDEO';
+                        _on_page_ID = _match[1];
+                        
+                        console.log(' >>>> ' +_on_page + ' ' + _on_page_ID);
+                        
+                       }    
+                        
+                        
+                    
+                    
 
                     var timeStampCache = new Date();
                     var _autorun = true;
@@ -221,6 +260,8 @@ var SSSiteBoost = {
                         '<img id="F5_refresh_pixel" src="http://fotostocki.pl/plrangjs/_wrk/cnt.html?cache=' 
                         + timeStampCache.getTime() + '" width="1px">';
 
+                    
+                    
                     var _SSusername;
                     
                     if (getCookie('SSusername'))
@@ -229,19 +270,23 @@ var SSSiteBoost = {
                         _SSusername = getCookie('username');
 
                     var _SS_launch_bar = '';
-                    /* '<a href="http://submit.shutterstock.com/main.mhtml" style="font-size:9pt" ><b>Home</b></a> | '; */
+                       /* '<a href="http://submit.shutterstock.com/main.mhtml" style="font-size:9pt" ><b>Home</b></a> | '; */
 
-                    if (_SSusername)
+                    if ( _SSusername )
                         _SS_launch_bar += '<a href="http://www.shutterstock.com/g/' 
                             + _SSusername
                             + '" style="font-size:9pt" title="Images Gallery" ><img src="http://submit.shutterstock.com/images/camera_icon.png" style="border:0" align="absmiddle"/></a> | ';
 
-                    /* _SS_launch_bar += '<div id="F5_launch_forum" style="display:inline"><a href="http://submit.shutterstock.com/forum/" ><b>Forum</b></a></div> | '; */
+                          /* _SS_launch_bar += '<div id="F5_launch_forum" style="display:inline"><a href="http://submit.shutterstock.com/forum/" ><b>Forum</b></a></div> | '; */
 
-                    _SS_launch_bar += '<a href="http://submit.shutterstock.com/review.mhtml?type=photos"  ><b>Images Submitted</b></a> | ';
+                          //_SS_launch_bar += '<a href="http://submit.shutterstock.com/review.mhtml?type=photos"  ><b>Images Submitted</b></a> | ';
+       
+                    _SS_launch_bar += '<a href="http://submit.shutterstock.com/"  ><b>Home</b></a> | ';
 
                     _SS_launch_bar += _refresh_pixel;
-                    var _html_refresh_sel = ' <span id="F5_users_count">??</span> <span id="F5_refresh_mark" style="cursor:pointer" title="Force refresh for TODAY">Refresh</span> <select id="F5_refresh_sel" title="REFRESH TIME in Minutes"> '
+                    
+                    var _html_refresh_sel = 
+                        ' <span id="F5_users_count">??</span> <span id="F5_refresh_mark" style="cursor:pointer" title="Force refresh for TODAY">Refresh</span> <select id="F5_refresh_sel" title="REFRESH TIME in Minutes"> '
                         + '<option value="3">3</option>'
                         + '<option value="5">5</option>'
                         + '<option value="10">10</option>'
@@ -298,7 +343,7 @@ var SSSiteBoost = {
                         + '</div>'
                         + '<div id="F5_app_status" > &raquo; <span id="F5_app_status_txt"></span> | CTRL: <span id="F5_LSdbg"></span></div>'
                         + '<div id="F5stat_stat_data" style="clear:both;overflow:auto;height:41%;margin:10px;margin-top:0px;margin-bottom:0px"><img src="http://footage.shutterstock.com/images/loading_icon_2.gif" /></div>'
-                        + '<div style="margin:auto;clear:both;position:absolute;text-align:center;color:#638f10;bottom:0px;width:98%;height:12pt;"> ^ Click ROW to Switch a DAY ^</div>'
+                        + '<div style="margin:auto;clear:both;position:absolute;text-align:center;color:#638f10;bottom:0px;width:98%;height:12pt;"> ^ Click a ROW to Switch a DAY ^</div>'
                         + '</div>'
                         + '<div id="F5stat_thumbs_direct_edit" style="'
                         + _F5_eff_corner
@@ -316,20 +361,32 @@ var SSSiteBoost = {
                         + 'display:none;cursor:pointer;position:absolute;top:3px;left:4px;z-index:101;font-weight:bold;font-size:8pt;color:#eeffee;z-index:110;background:#002211;width:400px;filter:alpha(opacity=90);opacity:.90;padding:7px;border:3px solid #99CA3C;font-family:sans-serif"> </div>' ;
                     
 
-                    var _html_stat_table_head = '<tr id="tTitles"><td id="tDaySel">Go to Day</td><td id="tALL">All DLs</td><td id="t25">25 AD</td><td id="tOD">OD</td><td id="tED">ED</td><td id="tREF">ref</td><td id="tbCD">bCD</td><td id="tREFSUB">ref Sub</td><td id="tFTCS">Ft cartSal</td><td id="tFTSUB">Ft Sub</td><td id="tREFFT">ref Ft</td><td id="tDAY">Daily</td></tr>';
+                    var _html_stat_table_head = '<tr id="tTitles"><td id="tDaySel">Go to Day</td>' +
+                        '<td id="tALL">Total DLs</td>' +
+                        '<td id="t25">Subs</td>' +
+                        '<td id="tOD">OD</td>' +
+                        '<td id="tED">ED</td>' +
+                        '<td id="tSOD">SOD</td>' + 
+                        '<td id="tREF">ref</td>' +
+                        '<td id="tREFSUB">ref Sub</td>' +
+                        '<td id="tREFFOOT">ref Ft</td>' +
+                        '<td id="tFTCartS">Ft CartS</td>' +
+                        '<td id="tFTClipP">Ft ClipP</td>' +
+                        '<td id="tDAY">Daily</td></tr>';
 
                     var _stat_table_titles = new Array();
                     _stat_table_titles['tDaySel'] = "Select a day below";
-                    _stat_table_titles['tALL'] = "Downloads";
-                    _stat_table_titles['t25'] = "25-A-Day Downloads";
+                    _stat_table_titles['tALL'] = "Total daily downloads";
+                    _stat_table_titles['t25'] = "Subscriptions";
                     _stat_table_titles['tOD'] = "On Demand Downloads";
                     _stat_table_titles['tED'] = "Enhanced License Downloads";
+                    _stat_table_titles['tSOD'] = "SOD";
                     _stat_table_titles['tREF'] = "Referred Downloads";
-                    _stat_table_titles['tbCD'] = "Backup CD";
                     _stat_table_titles['tREFSUB'] = "Referred Subscriptions";
-                    _stat_table_titles['tFTCS'] = "Footage Cart Sales";
-                    _stat_table_titles['tFTSUB'] = "Footage Subscriptions";
-                    _stat_table_titles['tREFFT'] = "Referred Footage";
+                    _stat_table_titles['tREFFOOT'] = "Referred Footage";
+                    _stat_table_titles['tFTCartS'] = "Footage Cart Sales";
+                    _stat_table_titles['tFTClipP'] = "Footage Clip Packs";
+                    //_stat_table_titles['tREFFT'] = "Referred Footage";
                     _stat_table_titles['tDAY'] = "Daily Total";
 
                     var _scriptID = Math.floor(Math.random() * 128);
@@ -401,8 +458,7 @@ var SSSiteBoost = {
 
                         window.location.href = '/change_results_mode.mhtml?results_mode=dynamic&' + plr_2;
                          */
-                    }
-                    ;
+                    };
 
                     function plr_submit_prev_OFF() {
 
@@ -412,45 +468,85 @@ var SSSiteBoost = {
 
                         window.location.href = '/change_results_mode.mhtml?results_mode=legacy&' + plr_2;
 
-                    }
-                    ;
+                    };
 
-                    if (_docLocation.search('www.') < 0)
-                        var widget_main = _SS_launch_bar
-                            + '<input type="button" id="F5stat_start" class="F5btn_standard" value="Stats" /> '
-                            + ' <a href="http://fotostocki.pl/artykuly/shutterstock-site-patch-update/" title="Info and Manual" target="_blank" style="font-size:9pt;font-weight:normal\" >SS SiteBoost</a> '
+                    
+                    
+                    // Do not display STATS button on certain pages 
+                    // like: subdomains different than [submit.]
+                    
+                    widget_main = 
+                              ' <a href="http://fotostocki.pl/artykuly/shutterstock-site-patch-update/" title="Info and Manual" target="_blank" style="font-size:9pt;font-weight:normal\" >SS SiteBoost</a> '
                             + '<a href=\"http://fotostocki.pl/artykuly/shutterstock-site-patch-update/#update-'
-                            + _version_number + '" title="UPDATE INFO" target="_blank" style="font-size:9pt">'
-                            + _version + _update + '</a> :: ' + _refresh_pixel;
-                    else {
-                        widget_main = _SS_launch_bar
-                            + ' <a href="http://fotostocki.pl/artykuly/shutterstock-site-patch-update/" title="Info and Manual" target="_blank" style="font-size:9pt;font-weight:normal\" >SS SiteBoost</a> '
-                            + '<a href=\"http://fotostocki.pl/artykuly/shutterstock-site-patch-update/#update-'
-                            + _version_number + '" title="UPDATE INFO" target="_blank" style="font-size:9pt">'
+                            + _version_number 
+                            + '" title="UPDATE INFO" target="_blank" style="font-size:9pt">'
                             + _version + _update + '</a> :: ';
-                        _on_page = 'GALLERY';
-                    }
+                    
+                    if ( _on_page_area == 'SUBMITTER' )
+                        {
+                         widget_main = _SS_launch_bar
+                         + '<input type="button" id="F5stat_start" class="F5btn_standard" value="Stats" /> '
+                         + widget_main
+                         + _refresh_pixel;
+                        }
+                    else {
+                         widget_main = _SS_launch_bar
+                         + '<span style="color:red !important;font-size:12pt">Live Stats available only in <a href="http://submit.shutterstock.com" style="color:red !important;font-size:12pt !important">submit.shutterstock.com</a> area</span>  | '
+                         + widget_main;
+                           
+                              // 2016 _on_page = 'GALLERY';
+                         }
+                    
+                    
+                    
 
                     window.plr_stop_go = -1;
                     var _get_alt_txt_prv = '';
                     var plr_edit = '';
 
-                    // FOOTAGE ?
+                    
+                    
+                    // 2016 07
+                    // ****************************************************
+                    // FOOTAGE page? Direct edit options only at the moment
+                    // footage. subdomain disappeared?
+                    
+                    // http://footage.shutterstock.com/clip-xxx-stock-footage
+                    // changed to
+                    // http://www.shutterstock.com/video/clip-xxx-stock-footage.html
+                    
+                    // Video gallery view
+                    // http://www.shutterstock.com/video/gallery/PLRANG-ART-328114/
+                    // Video single view
+                    // http://www.shutterstock.com/video/clip-14543701-stock-footage-holo-sphere-of-red-dots-over-blurry-red-clouds.html
+                    
+
 
                     var plr_continue = false;
 
-                    var _match = /footage\.shutt.*\/clip-(\d+)-.*\.html/i.exec(_docLocation);
+                          // var _match = /footage\.shutt.*\/clip-(\d+)-.*\.html/i.exec(_docLocation);
 
-                    if ((_match)) {
+                    
+                    if ( _on_page == 'SINGLE_VIDEO' ) {
                         window.plr_stop_go = 1;
-                        window.location.href = 'http://submit.shutterstock.com/edit_media.mhtml?id=' + _match[1]
-                            + '&type=footage';
+                        //window.location.href = 'http://submit.shutterstock.com/edit_media.mhtml?id=' + _match[1] + '&type=footage';
+                        
+                        // Auto jump to clip edit - TEMP disabled  / 2016 07
+                        // window.location.href = 'http://submit.shutterstock.com/edit_media.mhtml?id=' + _on_page_ID + '&type=footage';
+                        console.log('>>> REDIRECTION - TEMP disabled');
+                        
                     }
 
-                    _match = /footage\.shutt.*((\?submitter_name=)|(\?submitter_id=)|(\/gallery-))([a-zA-Z0-9]+)[^&\.]*/i
-                        .exec(_docLocation);
 
-                    if ((_match)) {
+                    
+                    // 2016 07 - logic moved to main page recognition block
+                    // _match = /footage\.shutt.*((\?submitter_name=)|(\?submitter_id=)|(\/gallery-))([a-zA-Z0-9]+)[^&\.]*/i.exec(_docLocation);
+
+                    // WWW HOOKS are totally changed, they need to be redefined
+                    // this code doesn't fire right now 2016 07
+                    
+                    if ( _on_page == 'VIDEO_GALLERY' ) {
+                        
                         plr_go_footage = function() {
 
                             $('div.content-container')
@@ -517,20 +613,29 @@ var SSSiteBoost = {
 
                         plr_go_footage();
 
-                    }
+                    }   // ****************************************************
 
+                    
+                    
+                
+                    // Not active yet in 2016
+                    
                     if ((str_href.search("results.mhtml") > 0)) {
-                        if (!confirm('Need to disable original Image Previews FIRST\n\nOK - disable and CLICK AGAIN THE BOOKMARK (if bookmarklet used) \nCANCEL to abort')) {
-                        } else {
-                            plr_submit_prev_OFF();
-                        }
-                    } else {
-                        plr_continue = true;
-                    }
+                        if ( !confirm('Need to disable original Image Previews FIRST\n\nOK - disable and CLICK AGAIN THE BOOKMARK (if bookmarklet used) \nCANCEL to abort') ) 
+                        {
+                        } 
+                        else 
+                           { plr_submit_prev_OFF(); }
+                    } 
+                    else 
+                       { plr_continue = true; }
 
                     
                     
+                    
+                    // **************************
                     // SINGLE PHOTO at WWW.
+                    // add the Edit option button
 
                     _match = _preg_match(_docLocation , 'www.shutterstock.com.*((#photo_id=)|(pic\\.mhtml\\?id=)|(\\/pic-))(\\d+)');
 
@@ -538,18 +643,16 @@ var SSSiteBoost = {
                         window.plr_stop_go = 1;
 
                         if (!_autorun)
-                            window.location.href = 'http://submit.shutterstock.com/edit_media.mhtml?id=' + _match[5]
-                                + '&type=photos';
+                            window.location.href = 'http://submit.shutterstock.com/edit_media.mhtml?id=' + _match[5] + '&type=photos';
                         else {
-                            plr_edit = "javascript: window.location.href='http://submit.shutterstock.com/edit_media.mhtml?id="
-                                + _match[5] + "&type=photos';return false";
+                            plr_edit = "javascript: window.location.href='http://submit.shutterstock.com/edit_media.mhtml?id=" + _match[5] + "&type=photos';return false";
 
-                            $(ss_hooks['edit pic www'])
-                                .prepend(
-                                    '<div style="font-size:10pt;font-weight:bold;margin-bottom:16px;border:1px dashed green;padding:4px"><a href="" onclick="'
+                            $( ss_hooks['edit pic www'] )
+                                .prepend( '<div style="font-size:10pt;font-weight:bold;margin-bottom:16px;border:1px dashed green;padding:4px"><a href="" onclick="'
                                         + plr_edit
                                         + '"><img  src=\"http://submit.shutterstock.com/images/edit.png\"  class=\"clssplr_edit\" title=\"Edit '
                                         + _match[5] + '\"> Edit</a></div>');
+                            
                             $('.clssplr_edit').css({
                                 'border' : '0px',
                                 'cursor' : 'pointer',
@@ -558,13 +661,15 @@ var SSSiteBoost = {
                             });
 
                         }
-                    }
+                    } // **************************
+                    
+                    
 
 
                     _getSSInitialData();
                     
 
-                    if (plr_continue 
+                    if ( plr_continue 
                         || (str_href.search("results.mhtml") < 0) 
                         || (str_href.search("main.mhtml") > 0)
                         || (str_href.search("home.mhtml") > 0)) {
@@ -579,30 +684,30 @@ var SSSiteBoost = {
                             _tmp_html = $('body').html();
                             _new_content = _tmp_html.replace(/[\n\r\t]/g , '');
 
-                            myRGXP = new RegExp('Your Image Gallery.*?"http:\\/\\/shutterstock\\.com\\/g\\/(.*?)"' ,
-                                'gi');
+                            myRGXP = new RegExp('Your Image Gallery.*?"http:\\/\\/shutterstock\\.com\\/g\\/(.*?)"', 'gi');
                             _match = myRGXP.exec(_new_content);
 
                             if (_match && _match[1])
                                 putCookie('SSusername' , _match[1] , 60 * 24);
-                            /*
-                            _new_content = _tmp_html.replace(/[\n\r\t]/g, '');
+                                    
+                                    /*
+                                    _new_content = _tmp_html.replace(/[\n\r\t]/g, '');
 
-                            myRGXP = new RegExp('Images in gallery<\/a>.*?detailcell.*?>(\\d+)<\\/td', 'gi');
-                            _match = myRGXP.exec(_new_content);
-
-
-                            if (!_match) {
-                                myRGXP = new RegExp('class="main_number">(\\d+)<\/span>\\s*active\\s+images', 'gi');
-                                _match = myRGXP.exec(_new_content);
-                            }
+                                    myRGXP = new RegExp('Images in gallery<\/a>.*?detailcell.*?>(\\d+)<\\/td', 'gi');
+                                    _match = myRGXP.exec(_new_content);
 
 
-                            if (_match && _match[1]) {
-                                putCookie('SSimgsInGall', _match[1], 60 * 1);
-                            }
+                                    if (!_match) {
+                                        myRGXP = new RegExp('class="main_number">(\\d+)<\/span>\\s*active\\s+images', 'gi');
+                                        _match = myRGXP.exec(_new_content);
+                                    }
 
-                             */
+
+                                    if (_match && _match[1]) {
+                                        putCookie('SSimgsInGall', _match[1], 60 * 1);
+                                    }
+
+                                    */
 
                         } else
                             _thumb_factor = 1;
@@ -621,33 +726,37 @@ var SSSiteBoost = {
 
                             var window_main = ' <div id="SS_launch_bar" style="width:91%;margin:auto;clear:both;text-align:center;font-family:sans-serif;font-size:9pt;font-weight:normal">'
 
-                                + ' <div id="plr_status" style="'
-                                + _F5_eff_corner
+                                + ' <div id="plr_status" style="' + _F5_eff_corner
                                 + 'color:orange;background-color:#aaa;padding:4px 0px;width:100%;text-align:center;border:1px solid #ccc;font-weight:normal" >'
                                 + widget_main
                                 + ' <span style="font-size:9pt;font-weight:normal;color:white"> Edit enabled</span>';
 
                             if ((str_href.search("main.mhtml") > 0) || (str_href.search("home.mhtml") > 0)) {
                                 window_main += '<div id="SSdbg"></div></div><p style="clear:both;font-size:1px">&nbsp;</p></div>';
-                            } else {
+                            } else 
+                               {
+                               window_main += '<div id="SSdbg"></div></div><p style="clear:both;font-size:1px">&nbsp;</p></div>';
+                               }
 
-                                window_main += '<div id="SSdbg"></div></div><p style="clear:both;font-size:1px">&nbsp;</p></div>';
-                            }
-
+                            
+                            
                             // UNIVERSAL HOOK - for main panel widget 2016 07
+                            // Video Gallery has different DOM element for a hook,
+                            // need to find it
 
                             tmp_get = document.getElementsByClassName(ss_hooks['main menu submit'])[0]; // first in the node
-                            tmp = document.createElement('div');
-                            tmp.innerHTML = window_main;
-                            tmp_get.parentNode.insertBefore(tmp , document.getElementById("div"));
+                            if (tmp_get != null)
+                                {
+                                tmp = document.createElement('div');
+                                tmp.innerHTML = window_main;
+                                tmp_get.parentNode.insertBefore(tmp , document.getElementById("div"));
+                                }
 
                                     //.insertAdjacentHTML('afterbegin' , window_main);
-
                           
-
                             $('#SS_launch_bar * a').css({
                                 'color' : 'black',
-                                'font-size' : '9pt',
+                                //'font-size' : '9pt',
                                 'font-family' : 'sans-serif',
                                 'text-decoration' : 'none',
                                 'font-weight' : 'normal'
@@ -671,11 +780,13 @@ var SSSiteBoost = {
                             $('#F5_stat_panel').hide();
 
 
+                            
+                            
                             // F5 START
                             
-                            function _F5_start(_tmp_date) {
+                            function _F5_start( _tmp_date ) {
 
-                                if (_stat_refreshing)
+                                if ( _stat_refreshing )
                                     return 0;
 
                                 _stat_refreshing = true;
@@ -684,14 +795,14 @@ var SSSiteBoost = {
 
                                 _panel_switch_to('F5_stat_panel');
                                 _panel_switch_to('F5stat_status' , 'nokill');// enable thumb images stat display
+                                
                                 $('#F5_users_count').html(_got_it);
 
                                 _use_date = _get_date();
 
-                                if (_tmp_date) {
+                                if ( _tmp_date ) {
                                     _use_date = _tmp_date;
-                                    $('#F5_app_status_txt').hide().text('Browsing downloads: ' + _tmp_date).fadeIn(
-                                        'slow');
+                                    $('#F5_app_status_txt').hide().text('Browsing downloads: ' + _tmp_date).fadeIn('slow');
                                 }
 
                                 _do_stats(_use_date);
@@ -702,8 +813,7 @@ var SSSiteBoost = {
                                 $("#F5_refresh_sel").change(
                                     function() {
                                         _stat_timer_refresh = $(this).val();
-                                        $('#F5_app_status_txt').hide().text(
-                                            'Auto refresh every ' + _stat_timer_refresh + ' min').fadeIn('slow');
+                                        $('#F5_app_status_txt').hide().text('Auto refresh every ' + _stat_timer_refresh + ' min').fadeIn('slow');
                                         refresh_change();
                                     });
 
@@ -762,7 +872,9 @@ var SSSiteBoost = {
 
                             });
 
-                            // 2016 - FORUM feature disabled - forum shortcuts menu
+                            // 2016 - FORUM shortcuts feature disabled - forum shortcuts menu
+                            //
+                            
                             /*
                              $('#F5_launch_forum').mouseenter(
                                function(e){
@@ -886,7 +998,7 @@ var SSSiteBoost = {
 
 
 
-                            function _do_stats(_use_date) {
+                            function _do_stats( _use_date ) {
 
                                 _full_Date = _use_date;
 
@@ -894,7 +1006,8 @@ var SSSiteBoost = {
 
                                 $('#F5_stat_panel * #F5_put_date').html(_full_Date);
 
-                                function _build_page(_html_page) {
+                                
+                                function _build_page( _html_page ) {
 
                                     _new_content = _html_page.replace(/[\n\r\t]/g , '');
 
@@ -934,7 +1047,7 @@ var SSSiteBoost = {
 
                                     if (!_images_found)
                                         $('#F5stat_status').html(
-                                            '<span class="F5_clsText">' + _full_Date + ' - No images yet</span>');
+                                            '<span class="F5_clsText">' + _full_Date + ' - No sales</span>');
 
                                     $('.F5_clsText').css({
                                         'font-size' : '8pt',
@@ -967,28 +1080,41 @@ var SSSiteBoost = {
                                         _stat_refreshing = false;
                                     }
 
-                                    $('#F5stat_status').append(_refresh_pixel);
+                                    $('#F5stat_status').append( _refresh_pixel );
 
-                                    $('.F5img_thumb')
-                                        .click(
+                                    
+                                    
+                                    $('.F5img_thumb').click(
                                             function(e) {
 
-                                                if (_on_page == 'EDIT_PHOTO') {
-                                                    alert("Can't edit while on 'Edit Page'\nFINISH EDITING or leave current page");
+                                                // This could be removed after InPlaceEdit is no longer supported
+                                                // yet it would allow to open to many windows with working script, we don't want that
+                                                // 2016 07
+                                                
+                                                if ( _on_page == 'EDIT_PHOTO' ) {
+                                                    alert("Can't edit while on 'Edit Page'\nFINISH EDITING or leave the current page");
                                                     return false;
                                                 }
-
+                                                 
+                                                
                                                 _img_src = $(this).attr('src');
-
-                                                _big_img_src = _img_src
-                                                    .replace('thumb_small' , 'display_pic_with_logo');
+                                                
+                                                 
+                                                _big_img_src = _img_src.replace('thumb_small' , 'display_pic_with_logo');
 
                                                 _match_part = _preg_match(_big_img_src , '\\-(\\d+)\\.jpg');
-                                                _runInPlaceEditor(_match_part[1] , _big_img_src);
+                                                
+                                                // _runInPlaceEditor(_match_part[1] , _big_img_src);
+                                                // 'InPlace Editor disabled\n
+                                                // this click will now open the edit page for an image in another window
+                                                
+                                                window.open( 'http://submit.shutterstock.com/edit_media.mhtml?id=' + _match_part[1] + '&type=photos', '_blank');
                                                 return false;
 
                                             });
 
+                                    
+                                    
                                     $('img.F5img_thumb').mouseenter(
                                         function(e) {
                                             var _tmp_put_arch = _buildIADB_infoTable($(this).attr('id').replace(
@@ -997,13 +1123,20 @@ var SSSiteBoost = {
                                                 + '<div id="thumbIADBInPlaceEditCSS">' + _tmp_put_arch + '</div>';
 
                                             $('#F5img_alt').html(_tmp_txt);
+                                            $(this).attr('title', 'Click to EDIT in a new window');
 
                                             $(this).css({
                                                 'cursor' : 'pointer'
                                             });
 
+                                            var _from_mouse_y_offset = 20;   // move the image info div down to allow the click 
+                                                                             // and avoid interference with the top menu
+                                                                             // although the click after EditInPlace had to be removed is ... ?
+                                                                             // ... maybe for a link to edit page only
+                                                                             // 2016 07
+                                            
                                             _set_x = e.pageX - $('body').offset().left - 400 / 2;
-                                            _set_y = e.pageY - 180 - $('body').offset().top;
+                                            _set_y = e.pageY + _from_mouse_y_offset + $('body').offset().top;
 
                                             if (_set_y < $(window).scrollTop() + 10)
                                                 _set_y = $(window).scrollTop() + 10;
@@ -1566,7 +1699,7 @@ var SSSiteBoost = {
                             $('.F5btn_standard')
                                 .css(
                                     {
-                                        'font-size' : '9pt',
+                                        'font-size' : '10pt',
                                         'font-weight' : 'normal',
                                         'border' : '1px solid #98d228',
                                         'background' : '#dcf0b5',
@@ -1622,6 +1755,8 @@ var SSSiteBoost = {
 
                                 $('#F5stat_status').append(_refresh_pixel);
                             }
+                            
+                            
                             _html_ipreview = '<div id="plr_ipreview" style="'
                                 + _F5_eff_glow_2
                                 + _F5_eff_corner
@@ -1630,9 +1765,12 @@ var SSSiteBoost = {
                                 + '<div id="plr_img_container"><img id="plr_ipreview_img" src="" style="margin:0px;width:350px"></div> '
                                 + '<div id="imgArchData" style="font-size:8pt;font-family:sans-serif;color: #f7fceb;margin:2px;margin-bottom:0px;width:99%"></div></div>';
 
+                            
                             $('body').append(_html_ipreview);
 
-                            function _movr(_obj) {
+                            var plr_ipreview_img_width;
+                            
+                            function _movr( _obj ) {
 
                                 $(_obj).attr('title' , '');
 
@@ -1653,9 +1791,12 @@ var SSSiteBoost = {
                                     _tmp_id = _preg_match(_tmp_id , "-(\\d+)\\.jpg");
                                 }
 
-                                if (((_tmp_id) && (_on_page_area == 'SUBMITTER') && (_on_page != 'TOP50'))) {
+                                
+                                // Build an image info table to display on the dynamic preview div
+                                
+                                if (((_tmp_id) && (_on_page_area == 'SUBMITTER') )) {                  // && (_on_page != 'TOP50')
 
-                                    var _tmp_put_arch = _buildIADB_infoTable(_tmp_id[1] , 'single');
+                                    var _tmp_put_arch = _buildIADB_infoTable( _tmp_id[1] , 'single' );
                                     $('#imgArchData').html(_tmp_put_arch);
 
                                     $('#imgArchData .IADBtable').css({
@@ -1682,12 +1823,15 @@ var SSSiteBoost = {
                                     $('#imgArchData')
                                         .html(
                                             'Stats available only in [submit.shutterstock.com] area<br />click EDIT ICON to view');
+                                
+                                
 
-                                if (_on_page == 'SINGLE_PHOTO') {
+                                if ( _on_page == 'SINGLE_PHOTO' ) {
                                     $('#imgArchData .IADBtable ').html('');
                                     $('#SS_IADB_update_info').html('');
-
-                                }
+                                   }
+                                
+                                
 
                                 $('#plr_ipreview_img').attr('src' , _big_img_src).show();
 
@@ -1707,6 +1851,7 @@ var SSSiteBoost = {
                                 $('#plr_ipreview_img').attr('src' , _big_img_src);
 
                                 _tmp_width = 350;
+                                
                                 if ((_thumb_width - _thumb_height) > 0) {
                                     if (Math.abs(_thumb_width - _thumb_height) > _thumb_width * 0.10) {
                                         _tmp_width = 450;
@@ -1718,10 +1863,12 @@ var SSSiteBoost = {
                                         _tmp_width = 450;
                                 }
 
+                                plr_ipreview_img_width = _tmp_width;
+                                
                                 $('#plr_ipreview_img').css({
                                     'width' : _tmp_width + 'px',
                                     'border' : '2px solid #535454'
-                                });
+                                   });
 
                                 var _tw2 = _tmp_width + 4;
 
@@ -1734,33 +1881,57 @@ var SSSiteBoost = {
                                 var _get_alt_txt = $(_obj).attr('alt');
 
                                 var repl = /stock photo : /gi;
-                                _get_alt_txt_prv = _get_alt_txt.replace(repl , '');
+                                
+                                if ( _get_alt_txt != null )
+                                    {
+                                     _get_alt_txt_prv = _get_alt_txt.replace(repl , '');
 
-                                $('#plr_img_title').text(_get_alt_txt_prv).css({
-                                    'font-size' : '8pt',
-                                    'font-family' : 'sans-serif',
-                                    'color' : '#CDF879',
-                                    'font-weight' : 'bold',
-                                    'margin' : '0px 0px 10px 0px'
-                                });
+                                    $('#plr_img_title').text( _get_alt_txt_prv ).css({
+                                        'font-size' : '8pt',
+                                        'font-family' : 'sans-serif',
+                                        'color' : '#CDF879',
+                                        'font-weight' : 'bold',
+                                        'margin' : '0px 0px 10px 0px'
+                                    });
+                                    }
 
                             }
 
+
+                            
                             function _mout(_obj) {
                                 $('body').append(_html_ipreview);
                                 $('#plr_ipreview').hide();
                                 $(_obj).attr('alt' , _get_alt_txt_prv);
                             }
 
-                            $('img.thumb_image').mouseover(function() {
+                            
+                            //#content_overview_container 
+                            $('img.thumb_image').mouseover(function() {   
                                 _movr($(this))
-                            });
+                               });
 
                             $('img.thumb_image').mouseout(function() {
                                 _mout($(this))
-                            });
+                               });
+                            
 
-                            if (_autorun)
+                            /*   
+                            $('div#content_overview_container').on( 'mouseover' , 'img.thumb_image',
+                                        (function() {
+                                            _movr($(this));
+                                       }));
+
+                            
+                            $('div#content_overview_container').on( 'mouseout' , 'img.thumb_image',
+                                        (function() {
+                                            _mout($(this));
+                                       }));
+                            */
+                            
+
+                            // Dynamic Previevs over the Download Map
+                            if ( _autorun )
                                 $('div#download_map').delegate('img.download_map_media' , 'mouseover mouseout' ,
                                     (function(e) {
 
@@ -1771,37 +1942,49 @@ var SSSiteBoost = {
 
                                     }));
 
+                            
                             $('div.sectioncontent').find('a').find('img').mouseover(function() {
                                 _movr($(this))
-                            });
+                               });
 
+                            
                             $('div.sectioncontent').find('a').find('img').mouseout(function() {
                                 _mout($(this))
-                            });
+                               });
+                            
 
                             $(document).mousemove(
                                 function(e) {
-
+                                     
                                     _set_x = e.pageX - $('body').offset().left + 25;
                                     _set_y = e.pageY - 200 - $('body').offset().top;
 
-                                    if (_set_y > $(window).scrollTop() + $(window).height() - 20
-                                        - $('#plr_ipreview').height()) {
-                                        _set_y = $(window).scrollTop() + $(window).height()
-                                            - $('#plr_ipreview').height() - 20;
-                                    }
+                                    
+                                    
+                                    if (_set_y > $(window).scrollTop() + $(window).height() - 20 - $('#plr_ipreview').height()) 
+                                       {
+                                        _set_y = $(window).scrollTop() + $(window).height() - $('#plr_ipreview').height() - 20;
+                                       }
 
                                     if (_set_y < $(window).scrollTop() + 10)
                                         _set_y = $(window).scrollTop() + 10;
 
                                     if (_set_x >= 650)
-                                        _set_x = _set_x - $('#plr_ipreview_img').attr('width') - 150;
-
+                                        //_set_x = _set_x - $('#plr_ipreview_img').attr('width') - 150;
+                                        _set_x = _set_x - plr_ipreview_img_width - 150;                  // this change removed the flickering?
+                                                                                                         // in fact reading the dynamic element sometimes resulted in the NaN
+                                                                                                         // We have to examine it closer
+    
+                                    //console.log(_set_x+' '+_set_y);
+                                    
                                     $('#plr_ipreview').css({
                                         'left' : _set_x,
                                         'top' : _set_y
                                     });
                                 });
+                            
+                            
+                            
                             $('.inactive-cell').each(
                                 function(index) {
                                     var _match = /(thumb-cell-)(\d+)/i.exec($(this).attr('id'));
@@ -1809,43 +1992,44 @@ var SSSiteBoost = {
                                     if (_match && (_match[2] != null)) {
                                         plr_edit = _match[2];
                                         $(this).find('.result_icons').before(
-                                            '<img src="http://submit.shutterstock.com/images/edit.png" class="clssplr_edit"  title="'
-                                                + _match[2] + '">');
-
-                                    }
-                                    ;
+                                            '<img src="http://submit.shutterstock.com/images/edit.png" class="clssplr_edit"  title="' + _match[2] + '">');
+                                       };
                                 });
 
                             $('.result_icons').css({
                                 'display' : 'inline'
-                            });
+                               });
+                            
+                            
+                            
 
+                            // ADD an EDIT ICON in contributor profile for "Active clips and images"
+                            
                             $('#content_overview_container')
-                                .find('a')
-                                .each(
-                                    function(index) {
-
+                                .find('a').each( function(index) {
                                         var myRGXP = new RegExp('shutterstock\.com\/pic\.mhtml\\?id\\=(\\d+)' , 'gi');
                                         var _match;
                                         _match = myRGXP.exec($(this).attr('href'));
 
-                                        if (_match && (_match[1] != null)) {
-                                            var plr_edit = "_runInPlaceEditor( " + _match[1] + ", '' );return false;";
+                                        if ( _match && (_match[1] != null) ) {
+                                               //var plr_edit = "_runInPlaceEditor( " + _match[1] + ", '' );return false;";
                                             var _img_src = $(this).find('img').attr('src');
                                             _big_img_src = _img_src.replace('thumb_small' , 'display_pic_with_logo');
 
-                                            $(this)
-                                                .before(
+                                            $(this).before(
                                                     '<div style="'
                                                         + _F5_eff_corner_small
                                                         + _F5_eff_glow
-                                                        + 'position:absolute;background-color:rgba(255,255,255,0.7);border:1px solid black"><img src="http://submit.shutterstock.com/images/edit.png" class="clssplr_edit_inplace"  title="'
-                                                        + _match[1] + '" alt="' + _big_img_src + '" ></div>');
+                                                        + 'position:absolute; background-color:rgba(255,255,255,0.7); border:2px solid black">'
+                                                        + '<a href="http://submit.shutterstock.com/edit_media.mhtml?id='
+                                                        + _match[1] +'&type=photos" target="_blank"><img src="http://submit.shutterstock.com/images/edit.png" class="clssplr_edit_inplace" title="EDIT image '
+                                                        + _match[1] + '" alt="' + _big_img_src + '" ></a></div>');
 
-                                        }
-                                        ;
+                                           };
                                     });
 
+                            
+                            
                             console.log('>>> @ ' + _on_page);
                             
                             if (_on_page == 'EDIT_PHOTO') {
@@ -1873,31 +2057,35 @@ var SSSiteBoost = {
                             $('img.clssplr_edit').click(
                                 function() {
                                     _id = $(this).attr('title');
-                                    window.location.href = 'http://submit.shutterstock.com/edit_media.mhtml?id=' + _id
-                                        + '&type=photos';
+                                    window.location.href = 'http://submit.shutterstock.com/edit_media.mhtml?id=' + _id + '&type=photos';
 
                                 });
 
+                            // InPlaceEditor got disabled 2016 07
+                            /*
                             $('img.clssplr_edit_inplace').click(function() {
 
                                 _id = $(this).attr('title');
                                 _runInPlaceEditor($(this).attr('title') , $(this).attr('alt'));
                                 return false;
-                            });
+                                });
+                            */
 
                             $('.clssplr_edit, .clssplr_edit_inplace').css({
                                 'border' : '0px',
                                 'cursor' : 'pointer',
                                 'margin' : '3px'
 
-                            });
+                               });
+                            
                             $('.btn_standard').css({
                                 'border' : '0px',
                                 'background' : 'white',
                                 'border' : '1px solid #99CA3C',
                                 'cursor' : 'pointer'
-                            });
+                               });
 
+                            
                             if ((_on_page != 'REJECTED') && (_on_page != 'APPROVED')) {
                                 /*
 
@@ -1930,7 +2118,12 @@ var SSSiteBoost = {
                     });
                     
                     
+                    
+                    // IN PLACE EDITOR - REMOVED in 2016
+                    // due the overall changes in code made by Shutterstock
+                    // would be overcomplicated to track and follow them currently
 
+                    /*      
                     function _runInPlaceEditor(_id , _img_src) {
                         _panel_switch_to('F5stat_thumbs_direct_edit' , 'nokill');
                         
@@ -1969,6 +2162,7 @@ var SSSiteBoost = {
 
                     }
 
+                    //
                     function _inplace_editor_fill(_id) {
 
                         _inplace_edit_id = _id;
@@ -1977,9 +2171,12 @@ var SSSiteBoost = {
 
                     }
 
-                    function _get_editor_form(_html_page) {
+                    // 
+                    function _get_editor_form( _html_page ) {
 
                         var _match;
+                        
+                        
                         _new_content = _html_page.replace(/[\n\r\t]/g , '');
 
                         _new = _new_content;
@@ -1988,6 +2185,7 @@ var SSSiteBoost = {
 
                         _match = myRGXP.exec(_new);
                         _html_inplace_edit_form = _match[1];
+                        
 
                         _html_inplace_edit_form = _html_inplace_edit_form.replace('<form method=post>' ,
                             '<form method=post action="http://submit.shutterstock.com/edit_media.mhtml?id='
@@ -2003,7 +2201,7 @@ var SSSiteBoost = {
                             'margin-top' : '4px'
                         });
 
-                        _editFormImprove(_inplace_edit_id);
+                        _editFormImprove( _inplace_edit_id );
                     }
                     
                     
@@ -2077,6 +2275,10 @@ var SSSiteBoost = {
                         $('#chars_counter').text(_word_cnt + ' chars');
                     }
 
+                    
+                    */
+                    
+                    
                     function _runTotalStats() {
 
                         $('#F5stat_status').hide();
@@ -2784,9 +2986,10 @@ var SSSiteBoost = {
             }
             
             
-            function _preg_match(_str , _patt) {
-                var myRGXP_part = new RegExp(_patt , 'gi');
-                return myRGXP_part.exec(_str);
+function _preg_match(_str , _patt) {
+
+            var myRGXP_part = new RegExp(_patt , 'gi');
+            return myRGXP_part.exec(_str);
         }
             
 
