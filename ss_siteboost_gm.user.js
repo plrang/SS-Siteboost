@@ -2045,15 +2045,21 @@ function _movr( _obj ) {
 
     if (!_tmp_id) {
         _tmp_id = $(_obj).attr('src');
-        _tmp_id = _preg_match(_tmp_id , "-(\\d+)\\.jpg");
+        _tmp_id = _preg_match( _tmp_id , "\/(\\d+)\\.jpg");   // changed in 2016 07 to / from -
     }
 
+    
+    if (debug_console)
+        console.log('_on_page: ' + _on_page + ' _on_page_area: ' + _on_page_area + ' IMG: ' +_tmp_id[1]);
     
     // Build an image info table to display on the dynamic preview div
     
     if ((( _tmp_id ) && ( _on_page_area == 'SUBMITTER') )) {                  // && (_on_page != 'TOP50')
 
+        
+        
         var _tmp_put_arch = _buildIADB_infoTable( _tmp_id[1] , 'single' );
+        
         $('#imgArchData').html(_tmp_put_arch);
 
         $('#imgArchData .IADBtable').css({
@@ -2165,11 +2171,12 @@ function _mout(_obj) {
 
 //#content_overview_container 
 $('img.thumb_image').mouseover(function() {   
-    _movr($(this))
+    _movr( $(this) );
    });
 
+
 $('img.thumb_image').mouseout(function() {
-    _mout($(this))
+    _mout( $(this) );
    });
 
 
@@ -2201,15 +2208,16 @@ if ( _autorun )
 
 
 $('div.sectioncontent').find('a').find('img').mouseover(function() {
-    _movr($(this))
+    _movr($(this));
    });
 
 
 $('div.sectioncontent').find('a').find('img').mouseout(function() {
-    _mout($(this))
+    _mout($(this));
    });
 
 
+// REACT to the MOUSE MOVEMENT
 $(document).mousemove(
     function(e) {
          
@@ -2803,9 +2811,19 @@ function _buildIADB_infoTable( _id , _get_more ) {
 
     var _tmp_put_arch = '<div class="IADBtable" style="font-weight:normal">No stat data yet</div>';
 
+    if (debug_console)
+        {
+        console.log( ' IMG _id: '+ _id + ' _get_more: ' + _get_more);
+        console.log( _imgADB[_id] );
+        }
+    
+    //
+    
     // No ID of image 
-    if (( !_id ) && ( _get_more == 'single' ))
+    if (( !_id ) && ( _get_more == 'single' )) {
         return _tmp_put_arch;
+        
+        }
 
     // No browser support for Loval Storage
     if ( !localStor_OK ) {
