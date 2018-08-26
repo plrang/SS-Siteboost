@@ -8,6 +8,7 @@
 // @include        https://*.shutterstock.com/*
 // ==/UserScript==
 
+// Archival information
 // ABOUT and INFO PAGE
 // Also available as a bookmarklet for any browser
 // https://plrang.com/blog/tag/ss-siteboost/

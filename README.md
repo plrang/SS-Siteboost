@@ -1,4 +1,4 @@
-2016 06. CLOSED Info Updated
+2018 07. CLOSED Info Updated
 2016 06. PROJECT CLOSED
 This is a try to fix up the original SS Siteboost for Shutterstock application script.
 Use it with the Greasemonkey add-on for Firefox.
