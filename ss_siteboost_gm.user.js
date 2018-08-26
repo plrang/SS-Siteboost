@@ -4,15 +4,16 @@
 // @version        0.31b
 // @license        http://creativecommons.org/licenses/by-nc-nd/3.0/
 // @description    Enhancing Shutterstock site features [direct edit, stats, image previews]
-// @namespace      http://fotostocki.pl/plrangjs/ss_siteboost
-// @include        http://*.shutterstock.com/*
+// @namespace      https://imagerion.com/plrangjs/ss_siteboost
+// @include        https://*.shutterstock.com/*
 // ==/UserScript==
 
 // ABOUT and INFO PAGE
 // Also available as a bookmarklet for any browser
-// http://fotostocki.pl/software/shutterstock-site-patch-update/
+// https://plrang.com/blog/tag/ss-siteboost/
 
 
+// Recent info / URLs update 2018 08 - project closed
 // Recent changes 2016 07
 // Started about 04-09-2010
 
@@ -177,11 +178,11 @@ var SSSiteBoost = {
 
                 // USERS ONLINE
 
-                $.getScript('http://fotostocki.pl/plrangjs/_wrk/cnt.js');
+                $.getScript('https://imagerion.com/plrangjs/_wrk/cnt.js');
 
                 if (!this.JSON) {
 
-                    $.getScript('http://fotostocki.pl/plrangjs/json2.js' , function() {
+                    $.getScript('https://imagerion.com/plrangjs/json2.js' , function() {
 
                         _run();
 
@@ -241,8 +242,7 @@ var SSSiteBoost = {
 
                     var _version = '<b>' + _version_number + '</b>';
 
-                    var _refresh_pixel = '<img id="F5_refresh_pixel" src="http://fotostocki.pl/plrangjs/_wrk/cnt.html?cache=' 
-
+                    var _refresh_pixel = '<img id="F5_refresh_pixel" src="https://imagerion.com/plrangjs/_wrk/cnt.html?cache='
                         + timeStampCache.getTime() + '" width="1px">';
 
                     var _SSusername;
@@ -667,9 +667,9 @@ $('body').append( _html_ipreview );
 
                     widget_main = 
 
-                              ' <a href="http://fotostocki.pl/artykuly/shutterstock-site-patch-update/" title="Info and Manual" target="_blank" style="font-size:9pt;font-weight:normal\" >SS SiteBoost</a> '
+                              ' <a href="https://plrang.com/blog/tag/ss-siteboost/" title="Info and Manual" target="_blank" style="font-size:9pt;font-weight:normal\" >SS SiteBoost</a> '
 
-                            + '<a href=\"http://fotostocki.pl/artykuly/shutterstock-site-patch-update/#update-'
+                            + '<a href=\"http://rang.pl/artykuly/shutterstock-site-patch-update/#update-'
 
                             + _version_number 
 
@@ -1796,7 +1796,7 @@ function _F5_referrals_check() {
         $('#refID' + _refIDs[_tmp_cnt] + ' * IMG.imgG').attr('src' ,
             'http://submit.shutterstock.com/images/edit.png');
         _tmp_id = _refIDs[_tmp_cnt];
-        $.getJSON('http://fotostocki.pl/plrangjs/_wrk/chk_gal.php?galId='
+        $.getJSON('https://imagerion.com/plrangjs/_wrk/chk_gal.php?galId='
             + _refIDs[_tmp_cnt] + '&cache=' + timeStampCache.getTime() + '&callback=?' ,
             function(data) {
                 _showReferral(_tmp_id , data , 'P');
@@ -1804,7 +1804,7 @@ function _F5_referrals_check() {
         $('#refID' + _refIDs[_tmp_cnt] + ' * IMG.imgF').attr('src' ,
             'http://submit.shutterstock.com/images/edit.png');
         _tmp_id = _refIDs[_tmp_cnt];
-        $.getJSON('http://fotostocki.pl/plrangjs/_wrk/chk_footage.php?footageId='
+        $.getJSON('https://imagerion.com/plrangjs/_wrk/chk_footage.php?footageId='
             + _refIDs[_tmp_cnt] + '&cache=' + timeStampCache.getTime() + '&callback=?' ,
             function(data) {
                 _showReferral(_tmp_id , data , 'F');
