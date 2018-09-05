@@ -1,7 +1,7 @@
 // ==UserScript==
 // @author         plrang
 // @name           SS SiteBoost GM
-// @version        0.31b
+// @version        0.32a
 // @license        http://creativecommons.org/licenses/by-nc-nd/3.0/
 // @description    Enhancing Shutterstock site features [direct edit, stats, image previews]
 // @namespace      https://imagerion.com/plrangjs/ss_siteboost
@@ -14,6 +14,7 @@
 // https://plrang.com/blog/tag/ss-siteboost/
 
 
+// Recent info / Rebuilding for practice 2018 09 - project closed
 // Recent info / URLs update 2018 08 - project closed
 // Recent changes 2016 07
 // Started about 04-09-2010
@@ -3702,11 +3703,6 @@ var SSSiteBoost = {
                 var myRGXP_part = new RegExp(_patt, 'gi');
                 return myRGXP_part.exec(_str);
             }
-          
-          
-      
-          
-          
           
           
 
