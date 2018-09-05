@@ -161,12 +161,10 @@ var SSSiteBoost = {
               
             console.log('const addHTML()');      
           	var htElem = document.querySelector( args.selector);
-            
               
             if ((htElem !== undefined) && (htElem !== null) )
               {
                 console.log(`${args.selector} FOUND: ${args.position}`);  
-                
              
                 switch ( args.position ) {
               
@@ -179,9 +177,6 @@ var SSSiteBoost = {
                   default:
 	              	htElem.insertAdjacentHTML(args.position, args.content);
                 }
-              
-                
-                
                 
                 if (debug_console) 
                   console.log(`${args.selector} updated`);  
@@ -194,10 +189,8 @@ var SSSiteBoost = {
                   console.log(`${args.selector} NOT FOUND`);  
                 return false;  
                 }
-            
+
           	}
-    
-    
                 
 
     			// (selector, attr, content)
@@ -224,10 +217,8 @@ var SSSiteBoost = {
                     if (debug_console) 
                         console.log(`${args.selector} setting ${args.attr} to ${args.content}`);  
 
-
                 }
               
-
              if (debug_console) 
                   console.log(`${args.selector} updated`);  
                 return true;
@@ -243,22 +234,13 @@ var SSSiteBoost = {
           	}
     
     
-    
-    
-    
 
             (function () {
 
                 console.log('>>> in _main > anonymous');
                 // $.ajaxSetup({
-
                 //     cache: false
-
                 // });
-
-                    
-
-                //var debug_console = false;
 
                 var browserType = new (function () {
 
