@@ -2252,42 +2252,25 @@ var SSSiteBoost = {
 
                             });
 
+                            
                             $('.F5btn_standard')
-
                                 .css(
-
                                     {
-
                                         'font-size': '10pt',
-
                                         'font-weight': 'normal',
-
                                         'border': '1px solid #98d228',
-
                                         'background': '#dcf0b5',
-
                                         'cursor': 'pointer',
-
                                         '-moz-border-radius': '4px',
-
                                         'padding': '4px',
-
                                         'text-overflow': 'ellipsis',
-
                                         'overflow': 'hidden',
-
                                         'text-shadow': 'rgba(8, 10, 8, 0.3) 1px 1px 2px',
-
                                         'border-radius': '4px',
-
                                         '-webkit-border-radius': '4px',
-
                                         'letter-spacing': '0.08em',
-
                                         'box-shadow': '0 2px 6px rgba(220, 240, 181, 0.5), inset 0 -8px 10px 0 #dfb, inset 0 -8px 0 8px #be9,  inset 0 -16px 17px -2px #bd9',
-
                                         '-moz-box-shadow': '0 2px 6px rgba(220, 240, 181, 0.5), inset 0 -8px 10px 0 #dfb, inset 0 -8px 0 8px #be9, inset  0 -16px 17px -2px #bd9'
-
                                     });
 
                             $('#F5btn_stats').attr('class', 'F5btn_standard');
@@ -3685,8 +3668,6 @@ var SSSiteBoost = {
                 var myRGXP_part = new RegExp(_patt, 'gi');
                 return myRGXP_part.exec(_str);
             }
-          
-          
 
 
         } /* _main() exchange end */
